@@ -31,25 +31,30 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   List<Expenses> myExpensesList = [];
 
   void expensesItemRefresh() {
+
     myExpensesList = _dbBox.keys.map((eachKey) {
       var item = _dbBox.get(eachKey);
+      print(' _ExpensesScreenState expensesItemRefresh ${eachKey.runtimeType}');
       return Expenses(
           title: item['title'] ?? '',
           amount: item['amount'] ?? '',
-          date: item['date'],
-          category: item['category']);
+          date: item['date'] ?? DateTime.now(),
+          category: item['category'] ?? 'work');
     }).toList();
     setState(() {});
   }
 
   void onPressed() {
     showModalBottomSheet(
-        useSafeArea: true,
-        isScrollControlled: true,
-        context: context,
-        builder: (context) => AddScreen(triggerRefresh: () {
-              expensesItemRefresh();
-            }));
+      useSafeArea: true,
+      isScrollControlled: true,
+      context: context,
+      builder: (context) => AddScreen(
+        triggerRefresh: () {
+          expensesItemRefresh();
+        },
+      ),
+    );
   }
 
   monthChangeFun({getMonth}) {
@@ -78,9 +83,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         floatingActionButton: FloatingActionButton(
           backgroundColor: const Color(0xffF16627).withOpacity(0.8),
-          onPressed: () {
-            onPressed();
-          },
+          onPressed: onPressed,
           child: const Icon(Icons.add),
         ),
         appBar: AppBar(
@@ -125,14 +128,17 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             Expanded(
               flex: 4,
               child: ExpenseItem(
-                deletFun: (index) {
+                deletFun: () {
                   setState(() {
-                    myExpensesList.removeAt(index);
+                  
+                    expensesItemRefresh();
                   });
                 },
-                redEdit: (date) {
-                  var _stringDateTime = DateFormat('MMM-yyyy').format(date);
-                  monthChangeFun(getMonth: _stringDateTime);
+                redEdit: () {
+                  // var _stringDateTime = DateFormat('MMM-yyyy').format();
+                  // monthChangeFun(getMonth: _stringDateTime);
+                  print('redEdit Called');
+                  expensesItemRefresh();
                 },
                 expensesList: myExpensesList,
               ),

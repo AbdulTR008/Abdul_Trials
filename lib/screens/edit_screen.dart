@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
 import 'package:expensize/widgets/reusable_text_input.dart';
@@ -13,13 +15,15 @@ class EditScreen extends StatefulWidget {
       required this.resTitle,
       required this.resAmount,
       required this.resCategory,
-      required this.resDate});
+      required this.resDate,
+      required this.itemIndex});
 
   String resTitle;
   String resCategory;
   String resAmount;
   DateTime resDate;
   Function? editData;
+  int itemIndex;
 
   @override
   State<EditScreen> createState() => _EditScreenState();
@@ -32,6 +36,7 @@ class _EditScreenState extends State<EditScreen> {
   String selectedCategory = Categorys[0];
   DateTime _selectedDates = DateTime.now();
   String formattedDate = '';
+  final _dbBox = Hive.box('expensizeDB');
 
   @override
   void initState() {
@@ -41,6 +46,9 @@ class _EditScreenState extends State<EditScreen> {
     _amount.text = widget.resAmount.toString();
     selectedCategory = widget.resCategory;
     formattedDate = DateFormat('dd-MMM-yyyy').format(widget.resDate);
+    Map<String, dynamic> updateItem2 = _dbBox.get(widget.itemIndex);
+
+    print('_EditScreenState initState ${updateItem2['date']}');
   }
 
   @override
@@ -52,12 +60,16 @@ class _EditScreenState extends State<EditScreen> {
   }
 
   updateOnPress() {
-    widget.editData!(
-        title: _title.text,
-        amount: _amount.text,
-        category: selectedCategory,
-        date: _selectedDates);
+    var existingObject = _dbBox.get(widget.itemIndex);
 
+    if (existingObject != null) {
+      existingObject['title'] = _title.text;
+      existingObject['amount'] = _amount.text;
+      existingObject['category'] = selectedCategory;
+      existingObject['date'] = _selectedDates;
+    }
+  
+    widget.editData!();
     Navigator.pop(context);
   }
 
@@ -155,3 +167,11 @@ class _EditScreenState extends State<EditScreen> {
     );
   }
 }
+
+
+
+// widget.editData!(
+    //     title: _title.text,
+    //     amount: _amount.text,
+    //     category: selectedCategory,
+    //     date: _selectedDates);

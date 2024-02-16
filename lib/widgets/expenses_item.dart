@@ -2,6 +2,7 @@ import 'package:expensize/screens/edit_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:expensize/models/expenses.dart';
+import 'package:hive/hive.dart';
 
 class ExpenseItem extends StatefulWidget {
   ExpenseItem({
@@ -21,26 +22,19 @@ class ExpenseItem extends StatefulWidget {
 }
 
 class _ExpenseItemState extends State<ExpenseItem> {
+  final _dbBox = Hive.box('expensizeDB');
   void onPress({index}) {
     showModalBottomSheet(
         context: context,
         builder: (context) => EditScreen(
-              editData: (
-                  {required title,
-                  required amount,
-                  required date,
-                  required category}) {
-                widget.expensesList![index].title = title;
-                widget.expensesList![index].amount = amount;
-                widget.expensesList![index].category = category;
-                widget.expensesList![index].date = date;
-
-                widget.redEdit!(date);
+              editData: () {
+                widget.redEdit!();
               },
               resAmount: widget.expensesList![index].amount,
               resTitle: widget.expensesList![index].title,
               resCategory: widget.expensesList![index].category,
               resDate: widget.expensesList![index].date,
+              itemIndex: index,
             ));
   }
 
@@ -60,13 +54,15 @@ class _ExpenseItemState extends State<ExpenseItem> {
               ),
             ),
             onDismissed: (u) {
-              widget.deletFun!(index);
+              _dbBox.delete(index);
+              widget.deletFun!();
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: GestureDetector(
                 onTap: () {
                   onPress(index: index);
+                  print('_ExpenseItemState Type ${index.runtimeType}');
                 },
                 child: Card(
                   child: ListTile(
@@ -80,7 +76,9 @@ class _ExpenseItemState extends State<ExpenseItem> {
                         ),
                         Expanded(
                           child: Text(
-                            widget.expensesList![index].formattedDate().toString(),
+                            widget.expensesList![index]
+                                .formattedDate()
+                                .toString(),
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                         ),
