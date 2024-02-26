@@ -1,13 +1,14 @@
+import 'package:expensize/riverpod/riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:get/get.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:expensize/screens/expenses.dart';
 import 'package:expensize/models/expenses.dart';
 import 'package:expensize/widgets/reusable_text_input.dart';
 
-class AddScreen extends StatefulWidget {
+class AddScreen extends ConsumerStatefulWidget {
   AddScreen({
     this.triggerRefresh,
     super.key,
@@ -16,10 +17,10 @@ class AddScreen extends StatefulWidget {
   Function? triggerRefresh;
 
   @override
-  State<AddScreen> createState() => _AddScreenState();
+  ConsumerState<AddScreen> createState() => _AddScreenState();
 }
 
-class _AddScreenState extends State<AddScreen> {
+class _AddScreenState extends ConsumerState<AddScreen> {
   String selectedCategory = Categorys[0];
   String? title;
   String? amount;
@@ -112,12 +113,14 @@ class _AddScreenState extends State<AddScreen> {
                           backgroundColor:
                               Theme.of(context).colorScheme.primaryContainer),
                       onPressed: () {
-                        _dbBox.add({
+                        ref.watch(dbAddProvider.notifier).add({
                           'title': title,
                           'amount': amount,
                           'date': selectedDates,
                           'category': selectedCategory
                         });
+
+                  
                         widget.triggerRefresh!();
 
                         Navigator.pop(context);
@@ -134,3 +137,13 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 }
+
+
+      // _dbBox.add(
+                        // {
+                        //   'title': title,
+                        //   'amount': amount,
+                        //   'date': selectedDates,
+                        //   'category': selectedCategory
+                        // }
+                        // );

@@ -31,10 +31,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   List<Expenses> myExpensesList = [];
 
   void expensesItemRefresh() {
-
     myExpensesList = _dbBox.keys.map((eachKey) {
       var item = _dbBox.get(eachKey);
-      print(' _ExpensesScreenState expensesItemRefresh ${eachKey.runtimeType}');
+      print(' _ExpensesScreenState expensesItemRefresh ${item}');
       return Expenses(
           title: item['title'] ?? '',
           amount: item['amount'] ?? '',
@@ -130,7 +129,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               child: ExpenseItem(
                 deletFun: () {
                   setState(() {
-                  
                     expensesItemRefresh();
                   });
                 },

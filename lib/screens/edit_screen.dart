@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
@@ -68,7 +68,7 @@ class _EditScreenState extends State<EditScreen> {
       existingObject['category'] = selectedCategory;
       existingObject['date'] = _selectedDates;
     }
-  
+
     widget.editData!();
     Navigator.pop(context);
   }
