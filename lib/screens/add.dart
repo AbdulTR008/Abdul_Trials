@@ -113,14 +113,13 @@ class _AddScreenState extends ConsumerState<AddScreen> {
                           backgroundColor:
                               Theme.of(context).colorScheme.primaryContainer),
                       onPressed: () {
-                        ref.watch(dbAddProvider.notifier).add({
+                        ref.watch(dbCrudProvider.notifier).add({
                           'title': title,
                           'amount': amount,
                           'date': selectedDates,
                           'category': selectedCategory
                         });
 
-                  
                         widget.triggerRefresh!();
 
                         Navigator.pop(context);

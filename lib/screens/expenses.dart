@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:expensize/riverpod/riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:expensize/models/expenses.dart';
 import 'package:expensize/screens/add.dart';
@@ -10,38 +12,25 @@ import 'package:expensize/widgets/expenses_item.dart';
 import 'package:expensize/widgets/cupertino_widget.dart';
 import 'package:expensize/widgets/reusable_home_cards.dart';
 
-class ExpensesScreen extends StatefulWidget {
+class ExpensesScreen extends ConsumerStatefulWidget {
   ExpensesScreen({super.key});
 
   @override
-  State<ExpensesScreen> createState() => _ExpensesScreenState();
+  ConsumerState<ExpensesScreen> createState() => _ExpensesScreenState();
 }
 
-class _ExpensesScreenState extends State<ExpensesScreen> {
+class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   final _dbBox = Hive.box('expensizeDB');
 
   @override
   void initState() {
     super.initState();
-    expensesItemRefresh();
+
     // _dbBox.clear();
   }
 
   List<Expenses> filteredMonthList = [];
   List<Expenses> myExpensesList = [];
-
-  void expensesItemRefresh() {
-    myExpensesList = _dbBox.keys.map((eachKey) {
-      var item = _dbBox.get(eachKey);
-      print(' _ExpensesScreenState expensesItemRefresh ${item}');
-      return Expenses(
-          title: item['title'] ?? '',
-          amount: item['amount'] ?? '',
-          date: item['date'] ?? DateTime.now(),
-          category: item['category'] ?? 'work');
-    }).toList();
-    setState(() {});
-  }
 
   void onPressed() {
     showModalBottomSheet(
@@ -50,7 +39,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       context: context,
       builder: (context) => AddScreen(
         triggerRefresh: () {
-          expensesItemRefresh();
+          ref.read(dbCrudProvider.notifier).read();
+          setState(() {});
         },
       ),
     );
@@ -129,16 +119,16 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               child: ExpenseItem(
                 deletFun: () {
                   setState(() {
-                    expensesItemRefresh();
+                    // expensesItemRefresh();
                   });
                 },
                 redEdit: () {
                   // var _stringDateTime = DateFormat('MMM-yyyy').format();
                   // monthChangeFun(getMonth: _stringDateTime);
                   print('redEdit Called');
-                  expensesItemRefresh();
+                  // expensesItemRefresh();
                 },
-                expensesList: myExpensesList,
+                expensesList: ref.watch(dbCrudProvider.notifier).read(),
               ),
             ),
           ],
@@ -147,6 +137,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     );
   }
 }
+
+
+
+////// OLD Reference***************************************************************************/////
 
 // List.generate(12, (index) {
 //   DateFormat('MMM', 'en-us')
@@ -211,3 +205,22 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 //     amount: '120',
 //     date: DateTime(2024, 2, 2),
 //     category: 'work'),
+
+
+////*** */
+///
+///
+///after river pod
+///
+///  void expensesItemRefresh() {
+  //   myExpensesList = _dbBox.keys.map((eachKey) {
+  //     var item = _dbBox.get(eachKey);
+  //     print(' _ExpensesScreenState expensesItemRefresh ${item}');
+  //     return Expenses(
+  //         title: item['title'] ?? '',
+  //         amount: item['amount'] ?? '',
+  //         date: item['date'] ?? DateTime.now(),
+  //         category: item['category'] ?? 'work');
+  //   }).toList();
+  //   setState(() {});
+  // }
