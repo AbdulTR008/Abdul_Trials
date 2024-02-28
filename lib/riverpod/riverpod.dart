@@ -8,8 +8,9 @@ final _hiveDB = Hive.box('expensizeDB');
 class DBChangeNotifier extends StateNotifier<Map<dynamic, dynamic>> {
   DBChangeNotifier() : super({});
 
-  add(mapdata) {
-    _hiveDB.add(mapdata);
+  void add(mapdata) {
+    state = {...state, ...mapdata};
+    _hiveDB.add(state);
   }
 
   List<Expenses> read() {
@@ -21,6 +22,8 @@ class DBChangeNotifier extends StateNotifier<Map<dynamic, dynamic>> {
           date: item['date'] ?? DateTime.now(),
           category: item['category'] ?? 'work');
     }).toList();
+    state = {...state, 'expenses': allOfMyExpense};
+
     return allOfMyExpense;
   }
 }

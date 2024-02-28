@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:expensize/riverpod/riverpod.dart';
+import 'package:expensize/riverpod/riverpod_read.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -30,7 +31,6 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   }
 
   List<Expenses> filteredMonthList = [];
-  List<Expenses> myExpensesList = [];
 
   void onPressed() {
     showModalBottomSheet(
@@ -39,8 +39,8 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
       context: context,
       builder: (context) => AddScreen(
         triggerRefresh: () {
-          ref.read(dbCrudProvider.notifier).read();
-          setState(() {});
+          // ref.read(dbCrudProvider.notifier).read();
+          // setState(() {});
         },
       ),
     );
@@ -48,7 +48,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
   monthChangeFun({getMonth}) {
     Future.delayed(Duration(milliseconds: 50), () {
-      filteredMonthList = myExpensesList.where((pickedItem) {
+      filteredMonthList = filteredMonthList.where((pickedItem) {
         final formattedMonth = DateFormat('MMM-yyyy').format(pickedItem.date);
         setState(() {});
         return getMonth == formattedMonth;
@@ -67,6 +67,8 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Expenses> myExpensesList = ref.watch(dbCrudProvider.notifier).read();
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -128,7 +130,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                   print('redEdit Called');
                   // expensesItemRefresh();
                 },
-                expensesList: ref.watch(dbCrudProvider.notifier).read(),
+                expensesList: myExpensesList,
               ),
             ),
           ],
