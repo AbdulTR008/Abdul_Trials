@@ -26,7 +26,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   @override
   void initState() {
     super.initState();
-
+    ref.watch(dbCrudProvider.notifier).read();
     // _dbBox.clear();
   }
 
