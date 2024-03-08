@@ -22,11 +22,16 @@ class ExpensesScreen extends ConsumerStatefulWidget {
 
 class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   final _dbBox = Hive.box('expensizeDB');
+  var dummyData = Expenses(
+      title: 'Dress',
+      amount: '120',
+      date: DateTime(2024, 2, 2),
+      category: 'work');
 
   @override
   void initState() {
     super.initState();
-    ref.watch(dbCrudProvider.notifier).read();
+    // ref.watch(dbCrudProvider.notifier).read();
     // _dbBox.clear();
   }
 
@@ -39,8 +44,8 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
       context: context,
       builder: (context) => AddScreen(
         triggerRefresh: () {
-          // ref.read(dbCrudProvider.notifier).read();
-          // setState(() {});
+          ref.read(dbCrudProvider.notifier).read();
+          setState(() {});
         },
       ),
     );
@@ -67,7 +72,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Expenses> myExpensesList = ref.watch(dbCrudProvider.notifier).read();
+    // List<Expenses> myExpensesList = ref.watch(dbReadProvider);
 
     return SafeArea(
       child: Scaffold(

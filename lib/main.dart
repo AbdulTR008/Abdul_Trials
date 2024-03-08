@@ -7,9 +7,6 @@ import 'package:hive_flutter/adapters.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // final documentDir = await getApplicationDocumentsDirectory();
-
   await Hive.initFlutter();
   await Hive.openBox('expensizeDB');
 

@@ -6,7 +6,7 @@ import 'package:expensize/models/expenses.dart';
 final _hiveDB = Hive.box('expensizeDB');
 
 class DBChangeNotifier extends StateNotifier<Map<dynamic, dynamic>> {
-  DBChangeNotifier() : super(const {});
+  DBChangeNotifier() : super({});
 
   void add(mapdata) {
     state = {...state, ...mapdata};
@@ -14,25 +14,30 @@ class DBChangeNotifier extends StateNotifier<Map<dynamic, dynamic>> {
   }
 
   read() {
-    // List<Expenses> allOfMyExpense =
+    List<Expenses> allOfMyExpense = _hiveDB.keys.map(
+      (eachKey) {
+        var item = _hiveDB.get(eachKey);
+        return Expenses(
+            title: item['title'] ?? '',
+            amount: item['amount'] ?? '',
+            date: item['date'] ?? DateTime.now(),
+            category: item['category'] ?? 'work');
+      },
+    ).toList();
 
-    state = Map.fromIterable(_hiveDB.keys.map((eachKey) {
-      var item = _hiveDB.get(eachKey);
-      return Expenses(
-          title: item['title'] ?? '',
-          amount: item['amount'] ?? '',
-          date: item['date'] ?? DateTime.now(),
-          category: item['category'] ?? 'work');
-    }));
-
-    // state = {...state, 'expenses': allOfMyExpense};
-
-    // return allOfMyExpense;
+    return allOfMyExpense;
   }
 }
 
-edit(editData) {}
-
 final dbCrudProvider =
     StateNotifierProvider<DBChangeNotifier, Map<dynamic, dynamic>>(
-        (ref) => DBChangeNotifier());
+  (ref) => DBChangeNotifier(),
+);
+
+
+
+
+
+   // state = {...state, 'expenses': allOfMyExpense};
+
+    // return allOfMyExpense;
